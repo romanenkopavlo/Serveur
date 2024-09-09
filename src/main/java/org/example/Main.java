@@ -6,9 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+//        Outils outils = new Outils();
+//        ArrayList<IpV4> mesInterfaces = outils.getSystemIp();
+//        System.out.println(mesInterfaces.size());
+//        System.out.println(mesInterfaces.get(0));
         final int port = 5000;
         char [] bufferEntree = new char[65535];
         String messageRecu;
@@ -28,7 +33,7 @@ public class Main {
 
                 while (!deconnexionClientDemandee && socketDuClient.isConnected()) {
                     System.out.println("attente...");
-                    fluxSortie.println("Entrez une phrase qui sera mise en majuscule par le serveur (exit pour finir)");
+                    fluxSortie.println("Les commandes disponibles: HELLO, TIME, ECHO *votre phrase*, YOU, ME (exit pour finir)");
                     int NbLus = fluxEntree.read(bufferEntree);
 
                     if (NbLus >= 4) {
