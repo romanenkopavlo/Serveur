@@ -1,0 +1,88 @@
+package org.example;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.time.LocalDateTime;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        final int port = 5000;
+        char [] bufferEntree = new char[65535];
+        String messageRecu;
+        String reponse = null;
+        ServerSocket monServeurDeSocket = new ServerSocket(port);
+        System.out.println("Serveur en fonctionnement");
+
+        while (true) {
+            try {
+                boolean deconnexionClientDemandee = false;
+                Socket socketDuClient = monServeurDeSocket.accept();
+                System.out.println("Connection avec: " + socketDuClient.getInetAddress());
+                System.out.println("Le port: " + socketDuClient.getLocalPort());
+
+                BufferedReader fluxEntree = new BufferedReader(new InputStreamReader(socketDuClient.getInputStream()));
+                PrintStream fluxSortie = new PrintStream(socketDuClient.getOutputStream());
+
+                while (!deconnexionClientDemandee && socketDuClient.isConnected()) {
+                    System.out.println("attente...");
+                    fluxSortie.println("Entrez une phrase qui sera mise en majuscule par le serveur (exit pour finir)");
+                    int NbLus = fluxEntree.read(bufferEntree);
+                    System.out.println(NbLus);
+
+                    if (NbLus >= 4) {
+                        if ((bufferEntree[1] == 'X' || bufferEntree[1] == 'x')) {
+                            messageRecu = new String(bufferEntree, 0, NbLus);
+                        } else {
+                            messageRecu = new String(bufferEntree, 0, NbLus - 2);
+                        }
+                    } else {
+                        messageRecu = new String(bufferEntree, 0, NbLus);
+                    }
+
+                    System.out.println(messageRecu);
+
+                    switch (messageRecu.toUpperCase()) {
+                        case "HELLO":
+                            reponse = "Bienvenue";
+                            break;
+                        case "TIME":
+                            LocalDateTime ld = LocalDateTime.now();
+                            reponse = ld.toString();
+                            break;
+                        case "YOU":
+                        case "WHOAREYOU?":
+                            reponse = "IP: " + socketDuClient.getInetAddress()
+                                    + " Le port: " + socketDuClient.getLocalPort();
+                            break;
+                        case "ME":
+                        case "WHOAMI?":
+                            reponse = InetAddress.getLocalHost().getHostAddress();
+                            break;
+                        case "EXIT":
+                            reponse = "JE VOUS DECONNECTE !!!";
+                            deconnexionClientDemandee = true;
+                            break;
+                    }
+
+                    if (messageRecu.startsWith("ECHO")) {
+                        reponse = messageRecu.substring(4);
+                        reponse = reponse.trim();
+                    }
+
+                    fluxSortie.println(reponse);
+                    System.out.println("\t\t Message emis: " + reponse);
+                }
+                fluxEntree.close();
+                fluxSortie.close();
+                socketDuClient.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
