@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.time.LocalDateTime;
 
 public class Main {
@@ -32,7 +30,6 @@ public class Main {
                     System.out.println("attente...");
                     fluxSortie.println("Entrez une phrase qui sera mise en majuscule par le serveur (exit pour finir)");
                     int NbLus = fluxEntree.read(bufferEntree);
-                    System.out.println(NbLus);
 
                     if (NbLus >= 4) {
                         if ((bufferEntree[1] == 'X' || bufferEntree[1] == 'x')) {
@@ -44,8 +41,6 @@ public class Main {
                         messageRecu = new String(bufferEntree, 0, NbLus);
                     }
 
-                    System.out.println(messageRecu);
-
                     switch (messageRecu.toUpperCase()) {
                         case "HELLO":
                             reponse = "Bienvenue";
@@ -56,12 +51,11 @@ public class Main {
                             break;
                         case "YOU":
                         case "WHOAREYOU?":
-                            reponse = "IP: " + socketDuClient.getInetAddress()
-                                    + " Le port: " + socketDuClient.getLocalPort();
+                            reponse = "IP: " + socketDuClient.getInetAddress().toString().substring(1) + "\tLe port: " + socketDuClient.getLocalPort();
                             break;
                         case "ME":
                         case "WHOAMI?":
-                            reponse = InetAddress.getLocalHost().getHostAddress();
+                            reponse = "IP: " + InetAddress.getLocalHost().getHostAddress() + "\tLe port: " + socketDuClient.getPort();
                             break;
                         case "EXIT":
                             reponse = "JE VOUS DECONNECTE !!!";
