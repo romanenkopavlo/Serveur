@@ -68,7 +68,7 @@ public class Main {
                             break;
                     }
 
-                    if (messageRecu.startsWith("ECHO")) {
+                    if (messageRecu.toUpperCase().startsWith("ECHO")) {
                         reponse = messageRecu.substring(4);
                         reponse = reponse.trim();
                     }
